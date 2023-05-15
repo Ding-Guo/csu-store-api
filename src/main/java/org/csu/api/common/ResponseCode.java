@@ -7,7 +7,7 @@ public enum ResponseCode {
 
     SUCCESS(0, "SUCCESS"),
     ERROR(1,"ERROR"),
-    ARGUMENTILLEGAL(10, "ARGUMENT ILLEGAL");
+    ARGUMENT_ILLEGAL(10, "ARGUMENT ILLEGAL");
 
     private final int code;
     private final String description;
