@@ -2,28 +2,40 @@ package org.csu.api.controller.front;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.constraints.NotNull;
+import org.csu.api.domain.Product;
+import org.csu.api.service.ProductService;
+import org.csu.api.vo.ProductDetailVO;
+import org.csu.api.vo.ProductListVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.csu.api.common.CommonResponse;
 
 @RestController
+@RequestMapping("/product/")
+@Validated
 public class ProductController {
-    @GetMapping("detail")
-    public CommonResponse<Object> getProductDetail(
-            @RequestParam @NotNull(message = "商品ID不能为空") Integer productId){
 
-        return null;
+    @Autowired
+    private ProductService productService;
+
+    @GetMapping("detail")
+    public CommonResponse<ProductDetailVO> getProductDetail(
+            @RequestParam @NotNull(message = "商品ID不能为空") Integer productId){
+        return productService.getProductDetail(productId);
     }
 
     @GetMapping("list")
-    public CommonResponse<Page<Object>> getProductList(
+    public CommonResponse<Page<ProductListVO>> getProductList(
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "") String orderBy,
             @RequestParam(defaultValue = "1") int pageNum,
-            @RequestParam(defaultValue = "2") int pageSize){
+            @RequestParam(defaultValue = "5") int pageSize){
 
-        return null;
+        return productService.getProductList(categoryId,keyword,orderBy,pageNum,pageSize);
     }
 }
