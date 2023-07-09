@@ -9,10 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
+import org.csu.api.common.ResponseCode;
 import org.csu.api.domain.User;
-import org.csu.api.dto.CheckUserFieldDTO;
-import org.csu.api.dto.LoginUserDTO;
-import org.csu.api.dto.RegisterUserDTO;
+import org.csu.api.dto.*;
 import org.csu.api.persistence.UserMapper;
 import org.csu.api.service.UserService;
 import org.csu.api.vo.UserVO;
@@ -61,20 +60,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CommonResponse<Object> checkField(String fieldName, String fieldValue) {
+    public CommonResponse<Object> checkField(String fieldName, String fieldValue,Integer num) {
         if (StringUtils.equals(fieldName, CONSTANT.USER_FIELD.USERNAME)) {
             long rows = userMapper.selectCount(Wrappers.<User>query().eq("username", fieldValue));
-            if (rows > 0) {
+            if (rows > num) {
                 return CommonResponse.createForError("用户名已存在");
             }
         } else if (StringUtils.equals(fieldName, CONSTANT.USER_FIELD.PHONE)) {
             long rows = userMapper.selectCount(Wrappers.<User>query().eq("phone", fieldValue));
-            if (rows > 0) {
+            if (rows > num) {
                 return CommonResponse.createForError("电话号码已存在");
             }
         } else if (StringUtils.equals(fieldName, CONSTANT.USER_FIELD.EMAIL)) {
             long rows = userMapper.selectCount(Wrappers.<User>query().eq("email", fieldValue));
-            if (rows > 0) {
+            if (rows > num) {
                 return CommonResponse.createForError("邮箱已存在");
             }
         } else {
@@ -86,15 +85,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse<Object> register(RegisterUserDTO registerUserDTO) {
 
-        CommonResponse<Object> checkResult = checkField(CONSTANT.USER_FIELD.USERNAME, registerUserDTO.getUsername());
+        CommonResponse<Object> checkResult = checkField(CONSTANT.USER_FIELD.USERNAME, registerUserDTO.getUsername(),0);
         if(!checkResult.isSuccess()){
             return checkResult;
         }
-        checkResult = checkField(CONSTANT.USER_FIELD.EMAIL, registerUserDTO.getEmail());
+        checkResult = checkField(CONSTANT.USER_FIELD.EMAIL, registerUserDTO.getEmail(),0);
         if(!checkResult.isSuccess()){
             return checkResult;
         }
-        checkResult = checkField(CONSTANT.USER_FIELD.PHONE, registerUserDTO.getPhone());
+        checkResult = checkField(CONSTANT.USER_FIELD.PHONE, registerUserDTO.getPhone(),0);
         if(!checkResult.isSuccess()){
             return checkResult;
         }
@@ -121,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse<String> getForgetQuestion(String username) {
-        CommonResponse<Object> checkResult = this.checkField(CONSTANT.USER_FIELD.USERNAME,username);
+        CommonResponse<Object> checkResult = this.checkField(CONSTANT.USER_FIELD.USERNAME,username,0);
         if(checkResult.isSuccess()){
             return CommonResponse.createForError("该用户名不存在");
         }
@@ -157,7 +156,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse<String> resetForgetPassword(String username, String newPassword, String forgetToken) {
-        CommonResponse<Object> checkResult = this.checkField(CONSTANT.USER_FIELD.USERNAME, username);
+        CommonResponse<Object> checkResult = this.checkField(CONSTANT.USER_FIELD.USERNAME, username,0);
         if (checkResult.isSuccess()) {
             return CommonResponse.createForError("用户名不存在");
         }
@@ -190,5 +189,68 @@ public class UserServiceImpl implements UserService {
         } else {
             return CommonResponse.createForError("token错误，请重新获取token");
         }
+    }
+
+    @Override
+    public CommonResponse<Object> updateUser(String username, UpdateUserDTO updateUserDTO) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username",updateUserDTO.getUsername());
+        User user = userMapper.selectOne(queryWrapper);
+//        System.out.println(user);
+        if (user == null){
+            return CommonResponse.createForError("用户不存在");
+        }
+        CommonResponse<Object> checkResult = checkField(CONSTANT.USER_FIELD.USERNAME, updateUserDTO.getUsername(),1);
+        if (!checkResult.isSuccess()) {
+            return checkResult;
+        }
+        checkResult = checkField(CONSTANT.USER_FIELD.EMAIL, updateUserDTO.getEmail(),1);
+        if (!checkResult.isSuccess()) {
+            return checkResult;
+        }
+        checkResult = checkField(CONSTANT.USER_FIELD.PHONE, updateUserDTO.getPhone(),1);
+        if (!checkResult.isSuccess()) {
+            return checkResult;
+        }
+        //更新
+//        String md5Password = bCryptPasswordEncoder.encode(updateUserInfoDTO.getPassword());
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+
+        updateWrapper.eq("username", updateUserDTO.getUsername())
+//                .set("password", md5Password)
+                .set("email", updateUserDTO.getEmail())
+                .set("phone", updateUserDTO.getPhone())
+                .set("question", updateUserDTO.getQuestion())
+                .set("answer", updateUserDTO.getAnswer());
+        int rows = userMapper.update(user, updateWrapper);
+        if (rows > 0) {
+            return CommonResponse.createForSuccess("SUCCESS");
+        }
+        return CommonResponse.createForError("修改个人信息失败");
+    }
+
+    @Override
+    public CommonResponse<String> resetPassword(String username, ResetPasswordDTO resetPasswordDTO) {
+        CommonResponse<Object> checkUser = this.checkField(CONSTANT.USER_FIELD.USERNAME, username,0);
+        if (checkUser.isSuccess()) {
+            return CommonResponse.createForError("密码重设失败");
+        }
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        if (user == null) {
+            return CommonResponse.createForError(ResponseCode.ERROR.getCode(), "密码重设失败");
+        }
+        if (!bCryptPasswordEncoder.matches(resetPasswordDTO.getOldPassword(), user.getPassword())) {
+            return CommonResponse.createForError("密码重设失败");
+        }
+        String md5Password = bCryptPasswordEncoder.encode(resetPasswordDTO.getNewPassword());
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("username", username)
+                .set("password", md5Password);
+        int rows = userMapper.update(null, updateWrapper);
+        if (rows > 0) {
+            return CommonResponse.createForSuccessMessage("SUCCESS");
+        }
+
+        return CommonResponse.createForError("密码重设失败");
     }
 }

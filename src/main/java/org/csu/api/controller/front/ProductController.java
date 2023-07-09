@@ -8,15 +8,13 @@ import org.csu.api.vo.ProductDetailVO;
 import org.csu.api.vo.ProductListVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.csu.api.common.CommonResponse;
 
 @RestController
 @RequestMapping("/product/")
 @Validated
+@CrossOrigin(originPatterns = "*",allowCredentials = "true")
 public class ProductController {
 
     @Autowired

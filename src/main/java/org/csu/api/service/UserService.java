@@ -2,9 +2,7 @@ package org.csu.api.service;
 
 import org.csu.api.common.CommonResponse;
 import org.csu.api.domain.User;
-import org.csu.api.dto.CheckUserFieldDTO;
-import org.csu.api.dto.LoginUserDTO;
-import org.csu.api.dto.RegisterUserDTO;
+import org.csu.api.dto.*;
 import org.csu.api.vo.UserVO;
 
 public interface UserService {
@@ -13,7 +11,7 @@ public interface UserService {
     CommonResponse<UserVO> login(LoginUserDTO loginUserDTO);
 
     //用户注册时的字段校验接口
-    CommonResponse<Object> checkField(String fieldName, String fieldValue);
+    CommonResponse<Object> checkField(String fieldName, String fieldValue, Integer num);
 
     //用户注册
     CommonResponse<Object> register(RegisterUserDTO registerUserDTO);
@@ -27,4 +25,8 @@ public interface UserService {
 
     //根据token重置用户密码
     CommonResponse<String> resetForgetPassword(String username, String newPassword, String forgetToken);
+
+    CommonResponse<Object> updateUser(String username, UpdateUserDTO updateUserDTO);
+
+    CommonResponse<String> resetPassword(String username, ResetPasswordDTO resetPasswordDTO);
 }

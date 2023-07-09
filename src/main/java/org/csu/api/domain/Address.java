@@ -13,17 +13,34 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Data
-@TableName("mystore_cart")
-public class CartItem {
+@TableName("mystore_address")
+public class Address {
     @TableId(type = IdType.AUTO)
     private Integer id;
     @TableField("user_id")
     private Integer userId;
-    @TableField("product_id")
-    private Integer productId;
 
-    private Integer quantity;
-    private Integer checked;
+    @TableField("address_name")
+    private String addressName;
+
+    @TableField("address_phone")
+    private String addressPhone;
+
+    @TableField("address_mobile")
+    private String addressMobile;
+
+    @TableField("address_province")
+    private String addressProvince;
+
+    @TableField("address_city")
+    private String addressCity;
+
+    @TableField("address_detail")
+    private String addressDetail;
+
+    @TableField("address_zip")
+    private String addressZip;
+
     @TableField("create_time")
     private LocalDateTime createTime;
     @TableField("update_time")
