@@ -2,6 +2,8 @@ package org.csu.api.vo;
 
 import lombok.Data;
 
+import java.util.HashMap;
+
 @Data
 public class UserVO {
     private Integer id;
@@ -11,4 +13,5 @@ public class UserVO {
     private String question;
     private String answer;
     private Integer role;
+    private String token;
 }

@@ -29,4 +29,6 @@ public interface UserService {
     CommonResponse<Object> updateUser(String username, UpdateUserDTO updateUserDTO);
 
     CommonResponse<String> resetPassword(String username, ResetPasswordDTO resetPasswordDTO);
+    UserVO getUserVOByToken(String token);
+
 }

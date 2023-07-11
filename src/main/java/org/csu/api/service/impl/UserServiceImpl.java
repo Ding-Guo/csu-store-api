@@ -10,10 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
 import org.csu.api.common.ResponseCode;
+import org.csu.api.domain.Category;
 import org.csu.api.domain.User;
 import org.csu.api.dto.*;
 import org.csu.api.persistence.UserMapper;
 import org.csu.api.service.UserService;
+import org.csu.api.util.ConstantKit;
+import org.csu.api.util.Md5TokenGenerator;
+import org.csu.api.util.RedisCache;
 import org.csu.api.vo.UserVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +42,10 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private Cache<String, String> localCache;
-
+    @Resource
+    private RedisCache redisCache;
+    @Resource
+    private Md5TokenGenerator tokenGenerator;
     @Override
     public CommonResponse<UserVO> login(LoginUserDTO loginUserDTO) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -49,10 +56,16 @@ public class UserServiceImpl implements UserService {
             return CommonResponse.createForError("用户名或密码错误");
         }
 
+
         if (bCryptPasswordEncoder.matches(loginUserDTO.getPassword(), user.getPassword())) {
             //登录成功
             UserVO userVO = new UserVO();
             BeanUtils.copyProperties(user, userVO);
+            String token = tokenGenerator.generate(user.getUsername());
+            redisCache.setCacheObject(token,user.getId());
+            redisCache.expire(token, ConstantKit.TOKEN_EXPIRE_TIME);
+            userVO.setToken(token);
+
             return CommonResponse.createForSuccess("登录成功", userVO);
         }
         //密码错误
@@ -252,5 +265,14 @@ public class UserServiceImpl implements UserService {
         }
 
         return CommonResponse.createForError("密码重设失败");
+    }
+    @Override
+    public UserVO getUserVOByToken(String token){
+        Integer userId = redisCache.getCacheObject(token);
+//        Category category = categoryMapper.selectById(categoryId);
+        User user = userMapper.selectById(userId);
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
     }
 }
