@@ -1,7 +1,7 @@
 package org.csu.api.controller.front;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
 import org.csu.api.common.ResponseCode;

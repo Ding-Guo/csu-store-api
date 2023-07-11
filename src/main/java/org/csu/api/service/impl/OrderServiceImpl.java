@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.csu.api.common.CONSTANT;
@@ -19,6 +19,7 @@ import org.csu.api.persistence.OrderItemMapper;
 import org.csu.api.persistence.OrderMapper;
 import org.csu.api.persistence.ProductMapper;
 import org.csu.api.service.AddressService;
+import org.csu.api.service.CartService;
 import org.csu.api.service.OrderService;
 
 import org.csu.api.util.ImageServerConfig;
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +58,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private ImageServerConfig imageServerConfig;
+
+    @Autowired
+    private CartService cartService;
 
 
     @Override
@@ -150,6 +155,12 @@ public class OrderServiceImpl implements OrderService {
         } else
             return CommonResponse.createForError("订单创建失败");
 
+        //删除购物车中生成订单的购物项
+        List<Integer> productIds = new ArrayList<>();
+        for (OrderItemVO orderItemVO : orderList.getOrderItemVoList()){
+            productIds.add(orderItemVO.getProductId());
+        }
+        cartService.deleteCart(userId,productIds);
         //返回VO
         OrderVO orderVo = new OrderVO();
         BeanUtils.copyProperties(order, orderVo);

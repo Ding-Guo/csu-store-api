@@ -1,8 +1,8 @@
 package org.csu.api.controller.front;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 
-@CrossOrigin(originPatterns = "*",allowCredentials = "true")
 
 @RequestMapping("/user/")
 

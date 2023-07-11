@@ -1,8 +1,8 @@
 package org.csu.api.controller.admin;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import org.csu.api.common.CommonResponse;
 import org.csu.api.domain.Category;
 import org.csu.api.service.CategoryService;

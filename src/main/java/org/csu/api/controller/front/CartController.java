@@ -1,8 +1,8 @@
 package org.csu.api.controller.front;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.NotNull;
+import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
 import org.csu.api.common.ResponseCode;
@@ -27,7 +27,7 @@ public class CartController {
     @Autowired
     private CartService cartService;
     @PostMapping("add")
-    public CommonResponse<String> addCart(@RequestBody PostCartDTO cartDTO, HttpSession session){
+    public CommonResponse<CartVO> addCart(@RequestBody PostCartDTO cartDTO, HttpSession session){
 
         UserVO loginUser = (UserVO) session.getAttribute(CONSTANT.LOGIN_USER);
         if (loginUser == null){
@@ -37,7 +37,7 @@ public class CartController {
         return cartService.addCart(loginUser.getId(),cartDTO.getProductId(),cartDTO.getQuantity());
     }
     @PostMapping("update")
-    public CommonResponse<String> updateCart(@RequestBody PostCartDTO cartDTO, HttpSession session){
+    public CommonResponse<CartVO> updateCart(@RequestBody PostCartDTO cartDTO, HttpSession session){
         UserVO loginUser = (UserVO) session.getAttribute(CONSTANT.LOGIN_USER);
         if (loginUser == null){
             return CommonResponse.createForError(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDescription());
@@ -46,7 +46,7 @@ public class CartController {
     }
 
     @PostMapping("delete")
-    public CommonResponse<String> deleteCart(@RequestBody ProductIdDTO productIdDTO, HttpSession session){
+    public CommonResponse<CartVO> deleteCart(@RequestBody ProductIdDTO productIdDTO, HttpSession session){
         UserVO loginUser = (UserVO) session.getAttribute(CONSTANT.LOGIN_USER);
         if (loginUser == null){
             return CommonResponse.createForError(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getDescription());

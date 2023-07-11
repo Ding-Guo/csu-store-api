@@ -1,7 +1,7 @@
 package org.csu.api.controller.front;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 import org.csu.api.domain.Product;
 import org.csu.api.service.ProductService;
 import org.csu.api.vo.ProductDetailVO;

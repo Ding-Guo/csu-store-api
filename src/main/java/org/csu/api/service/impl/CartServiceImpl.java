@@ -3,7 +3,7 @@ package org.csu.api.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
@@ -33,7 +33,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private ProductMapper productMapper;
     @Override
-    public CommonResponse<String> addCart(Integer userId, Integer productId, Integer quantity) {
+    public CommonResponse<CartVO> addCart(Integer userId, Integer productId, Integer quantity) {
         //判断商品ID是否存在
         List<Integer> productLists = new ArrayList<>();
         productLists.add(productId);
@@ -69,13 +69,13 @@ public class CartServiceImpl implements CartService {
             result = this.updateCart(cartItem,quantity);
         }
         if (result ==1){
-            return CommonResponse.createForSuccessMessage("成功");
+            return this.getCartList(userId);
         }
         return CommonResponse.createForError("添加失败");
     }
 
     @Override
-    public CommonResponse<String> updateCart(Integer userId, Integer productId, Integer quantity) {
+    public CommonResponse<CartVO> updateCart(Integer userId, Integer productId, Integer quantity) {
         List<Integer> productLists = new ArrayList<>();
         productLists.add(productId);
         if (!this.checkInCart(productLists)){
@@ -100,13 +100,13 @@ public class CartServiceImpl implements CartService {
             result = this.updateCart(cartItem,quantity);
         }
         if (result ==1){
-            return CommonResponse.createForSuccessMessage("成功");
+            return this.getCartList(userId);
         }
         return CommonResponse.createForError("添加失败");
     }
 
     @Override
-    public CommonResponse<String> deleteCart(Integer userId, List<Integer> productIds) {
+    public CommonResponse<CartVO> deleteCart(Integer userId, List<Integer> productIds) {
         if (!this.checkInCart(productIds)){
             return CommonResponse.createForError("商品ID不存在或者已经下架");
         }
@@ -118,7 +118,7 @@ public class CartServiceImpl implements CartService {
             cartItemMapper.delete(queryWrapper);
         }
 
-        return CommonResponse.createForError("删除成功");
+        return this.getCartList(userId);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.csu.api.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data

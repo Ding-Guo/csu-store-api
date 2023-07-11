@@ -1,7 +1,7 @@
 package org.csu.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import jakarta.validation.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDateTime;

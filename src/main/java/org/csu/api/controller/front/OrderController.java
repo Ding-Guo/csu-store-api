@@ -1,7 +1,7 @@
 package org.csu.api.controller.front;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 import org.csu.api.common.CONSTANT;
 import org.csu.api.common.CommonResponse;
 import org.csu.api.common.ResponseCode;
@@ -59,7 +59,7 @@ public class OrderController {
         return orderService.getOrderList(pageNum,pageSize,loginUser.getId());
     }
 
-    @PostMapping("/cancel")
+    @GetMapping("/cancel")
     public CommonResponse<Object> cancelOrder(@RequestParam String orderNo,HttpSession session) {
         UserVO loginUser = (UserVO) session.getAttribute(CONSTANT.LOGIN_USER);
         if (loginUser == null)
